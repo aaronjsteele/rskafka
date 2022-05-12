@@ -1,0 +1,5 @@
+project: rskafka
+target: record_batch_body_reader
+
+cmds:
+  - cmd: /record_batch_body_reader

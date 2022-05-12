@@ -1,0 +1,21 @@
+# Use Rust to build
+FROM rustlang/rust:nightly as builder
+
+# Add source code to the build stage.
+ADD . /rskafka
+WORKDIR /rskafka
+
+RUN cargo install cargo-fuzz
+
+# BUILD INSTRUCTIONS
+WORKDIR /rskafka/fuzz
+RUN cargo +nightly fuzz build protocol_reader && \
+    cargo +nightly fuzz build record_batch_body_reader
+# Output binaries are placed in /rskafka/target/x86_64-unknown-linux-gnu/release/
+# Note that here the target directory is in the root directory of the project
+
+# Package Stage -- we package for a plain Ubuntu machine
+FROM --platform=linux/amd64 ubuntu:20.04
+
+# Copy the binaries from the build stage to the plain Ubuntu image
+COPY --from=builder /rskafka/target/x86_64-unknown-linux-gnu/release/protocol_reader /rskafka/target/x86_64-unknown-linux-gnu/release/record_batch_body_reader /

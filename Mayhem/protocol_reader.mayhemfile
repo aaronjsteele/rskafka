@@ -1,0 +1,5 @@
+project: rskafka
+target: protocol_reader
+
+cmds:
+  - cmd: /protocol_reader
